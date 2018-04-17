@@ -26,7 +26,8 @@ emotion <- function(frame) {
 
   textSummary <- tokenFrame %>%
     group_by(source, sentiment, count) %>%
-    count(source, sentiment)
+    count(source, sentiment) %>%
+    mutate(normalisedEmotion = n / count)
 
   textSummary[is.na(textSummary)] <- 0
 
@@ -37,10 +38,18 @@ emotion <- function(frame) {
 
   print(
     ggplot(textSummary, aes (x = sentiment, y = n, fill = source)) + geom_col() +
-      coord_flip() + facet_wrap(~source) + labs(title = "Emotional Sentiment Analysis of Text",
+      coord_flip() + facet_wrap(~source) + labs(title = "Emotional Sentiment Analysis of Text (Total)",
                                                 x = "Count of words",
                                                 y = "Assigned Emotion",
                                                 caption = "Using NRC lexicon")
         )
+
+  print(
+    ggplot(textSummary, aes (x = sentiment, y = normalisedEmotion, fill = source)) + geom_col() +
+      coord_flip() + facet_wrap(~source) + labs(title = "Emotional Sentiment Analysis of Text (Per Source Unit)",
+                                                x = "Count of words",
+                                                y = "Normalised Assigned Emotion",
+                                                caption = "Using NRC lexicon")
+  )
 
 }
